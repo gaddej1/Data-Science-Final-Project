@@ -16,7 +16,7 @@ library(tidyverse)
 
 myData <- read_csv(url(urlfile))
 
-# Define UI for application that draws a histogram
+# UI
 ui <- fluidPage(
     setBackgroundColor(
         color = c("#AFEEEE", "#98FB98"), 
@@ -26,16 +26,17 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("Do Majors With More Men Than Women Tend to Have Higher Salaries?"),
-
-    # Sidebar with a slider input for number of bins 
+    
+    #Graph 1
     splitLayout(
         sliderInput("head",
                     "Number of Highest Paying Majors:",
                     min = 5,
                     max = 20,
                     value = 10), 
-        plotOutput("distPlot")
+        plotOutput("hpm")
     ), 
+    #Table 1
     splitLayout(
         sliderInput("rows", 
                    "Number of Majors with Highest Percentage of Women", 
@@ -44,6 +45,7 @@ ui <- fluidPage(
                    value = 10), 
         tableOutput("table1")
     ), 
+    #Table 2
     splitLayout(
         sliderInput("rows2", 
                     "Number of Majors with Highest Percentage of Men", 
@@ -52,18 +54,20 @@ ui <- fluidPage(
                     value = 10),
         tableOutput("table2")
     ), 
+    #Graph 2
     splitLayout(
         radioButtons("percentile", label = h3("Percentile"),
                      choices = list("25th Percentile" = 1, "Median" = 2, "75th Percentile" = 3), 
                      selected = 1),
-        plotOutput("value")
+        plotOutput("salary")
     )
 )
 
-# Define server logic required to draw a histogram
+# Server
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
+    
+    #Graph 1
+    output$hpm <- renderPlot({
         myData <- mutate(myData, majWom = ifelse(myData$Women > myData$Men, T, F))
         top <- head(myData, input$head)
         ggplot(data = top) + 
@@ -74,7 +78,8 @@ server <- function(input, output) {
             title = "Average Salaries of Highest Paying Majors")
     })
     
-    output$value <- renderPlot({
+    #Graph 2
+    output$salary <- renderPlot({
         if (input$percentile == 1){
             ggplot(data = myData, mapping = aes(x = ShareWomen, y = P25th)) +
                 geom_point(color = "mediumorchid2") +
@@ -98,6 +103,7 @@ server <- function(input, output) {
         }
     })
     
+    #Table 1
     output$table1 <- renderTable({
         dat <- mutate(myData, PercentWomen = ShareWomen * 100) %>%
             select(Major, Median, PercentWomen) %>%
@@ -105,6 +111,7 @@ server <- function(input, output) {
         head(dat, input$rows)
     })
     
+    #Table 2
     output$table2 <- renderTable({
         dat <- mutate(myData, PercentMen = 100 - (ShareWomen * 100)) %>%
             select(Major, Median, PercentMen) %>%
