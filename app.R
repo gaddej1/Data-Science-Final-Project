@@ -14,6 +14,7 @@ library(shinyWidgets)
 library(readr)
 library(tidyverse)
 
+urlfile = "https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv"
 myData <- read_csv(url(urlfile))
 
 # UI
@@ -28,38 +29,54 @@ ui <- fluidPage(
     titlePanel("Do Majors With More Men Than Women Tend to Have Higher Salaries?"),
     
     #Graph 1
-    splitLayout(
-        sliderInput("head",
-                    "Number of Highest Paying Majors:",
-                    min = 5,
-                    max = 20,
-                    value = 10), 
-        plotOutput("hpm")
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("head",
+                        "Number of Highest Paying Majors:",
+                        min = 5,
+                        max = 20,
+                        value = 10)
+        ), 
+        mainPanel(
+            plotOutput("hpm")
+        )
     ), 
     #Table 1
-    splitLayout(
-        sliderInput("rows", 
-                   "Number of Majors with Highest Percentage of Women", 
-                   min = 5, 
-                   max = 20, 
-                   value = 10), 
-        tableOutput("table1")
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("rows", 
+                        "Number of Majors with Highest Percentage of Women", 
+                        min = 5, 
+                        max = 20, 
+                        value = 10)
+        ), 
+        mainPanel(
+            tableOutput("table1")
+        )
     ), 
     #Table 2
-    splitLayout(
-        sliderInput("rows2", 
-                    "Number of Majors with Highest Percentage of Men", 
-                    min = 5, 
-                    max = 20, 
-                    value = 10),
-        tableOutput("table2")
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("rows2", 
+                        "Number of Majors with Highest Percentage of Men", 
+                        min = 5, 
+                        max = 20, 
+                        value = 10)
+        ), 
+        mainPanel(
+            tableOutput("table2")
+        )
     ), 
     #Graph 2
-    splitLayout(
-        radioButtons("percentile", label = h3("Percentile"),
-                     choices = list("25th Percentile" = 1, "Median" = 2, "75th Percentile" = 3), 
-                     selected = 1),
-        plotOutput("salary")
+    sidebarLayout(
+        sidebarPanel(
+            radioButtons("percentile", label = h3("Percentile"),
+                         choices = list("25th Percentile" = 1, "Median" = 2, "75th Percentile" = 3), 
+                         selected = 1)
+        ), 
+        mainPanel(
+            plotOutput("salary")
+        )
     )
 )
 
